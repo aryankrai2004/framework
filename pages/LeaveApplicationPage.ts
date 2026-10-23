@@ -4,6 +4,7 @@ export class LeaveApplicationPage {
   readonly leaveForm: Locator;
   readonly pageTitle: Locator;
   readonly noLeaveTypesMessage: Locator;
+  readonly formLoader: Locator;
   readonly leaveTypeDropdown: Locator;
   readonly leaveBalance: Locator;
   readonly dateInputs: Locator;
@@ -13,13 +14,14 @@ export class LeaveApplicationPage {
   readonly overlappingRequestsHeading: Locator;
 
   constructor(private readonly page: Page) {
-    this.leaveForm = page
-      .locator('.orangehrm-card-container')
-      .filter({ has: page.locator('.oxd-select-text') });
-    this.pageTitle = this.leaveForm.getByRole('heading');
+    this.pageTitle = page
+      .getByRole('heading')
+      .filter({ hasText: /apply leave|solicitar licencia/i });
+    this.leaveForm = page.locator('.oxd-form');
     this.noLeaveTypesMessage = page.getByText(
       /no leave types with leave balance|no hay tipos de.*saldo/i,
     );
+    this.formLoader = page.locator('.oxd-form-loader');
     this.leaveTypeDropdown = this.leaveForm.locator('.oxd-select-text').first();
     this.leaveBalance = page.getByText(/\d+(?:\.\d+)? Day\(s\)/);
     this.dateInputs = this.leaveForm.getByRole('textbox', {
@@ -41,16 +43,13 @@ export class LeaveApplicationPage {
   async open(): Promise<boolean> {
     await this.page.goto('/web/index.php/leave/applyLeave');
     await expect(this.page).toHaveURL(/\/leave\/applyLeave/);
-    await expect(
-      this.page.getByRole('heading', { name: 'Apply Leave' }),
-    ).toBeVisible();
+    await expect(this.pageTitle).toBeVisible();
+    await this.waitForFormLoader();
 
     if (await this.noLeaveTypesMessage.isVisible()) {
       return false;
     }
 
-    await expect(this.leaveForm).toBeVisible();
-    await expect(this.pageTitle).toBeVisible();
     await expect(this.leaveTypeDropdown).toBeVisible();
     await expect(this.dateInputs).toHaveCount(2);
     await expect(this.commentsInput).toBeVisible();
@@ -59,8 +58,10 @@ export class LeaveApplicationPage {
   }
 
   async selectLeaveType(name: string): Promise<void> {
+    await this.waitForFormLoader();
     await this.leaveTypeDropdown.click();
     await this.page.getByRole('option', { name, exact: true }).click();
+    await this.waitForFormLoader();
     await expect(this.leaveTypeDropdown).toContainText(name);
     await expect(this.leaveBalance).toBeVisible();
   }
@@ -93,6 +94,10 @@ export class LeaveApplicationPage {
       availableDays,
       `Expected at least one day of leave to be available; got "${balanceText}"`,
     ).toBeGreaterThanOrEqual(1);
+  }
+
+  private async waitForFormLoader(): Promise<void> {
+    await expect(this.formLoader).toBeHidden();
   }
 
   private requestRow(date: string, leaveType: string): Locator {
