@@ -5,8 +5,10 @@ export class DashboardPage {
   readonly myInfoLink: Locator;
 
   constructor(private readonly page: Page) {
-    this.pageTitle = page.getByRole('heading', { name: 'Dashboard' });
-    this.myInfoLink = page.getByRole('link', { name: 'My Info' });
+    this.pageTitle = page.getByRole('banner').getByRole('heading');
+    this.myInfoLink = page.locator(
+      'a[href="/web/index.php/pim/viewMyDetails"]',
+    );
   }
 
   async expectLoaded(): Promise<void> {

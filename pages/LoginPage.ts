@@ -7,9 +7,9 @@ export class LoginPage {
   readonly errorMessage: Locator;
 
   constructor(private readonly page: Page) {
-    this.usernameInput = page.getByRole('textbox', { name: 'Username' });
-    this.passwordInput = page.getByRole('textbox', { name: 'Password' });
-    this.submitButton = page.getByRole('button', { name: 'Login' });
+    this.usernameInput = page.locator('input[name="username"]');
+    this.passwordInput = page.locator('input[name="password"]');
+    this.submitButton = page.locator('button[type="submit"]');
     this.errorMessage = page.locator('.oxd-alert-content-text');
   }
 

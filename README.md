@@ -15,6 +15,22 @@ npm.cmd install
 npx.cmd playwright install chromium
 ```
 
+## Playwright Test agents in VS Code
+
+The workspace includes Playwright's planner, generator, and healer agents under
+`.github/agents/`. Use the planner to explore the app and write a test plan in
+`specs/`, the generator to create tests from that plan, and the healer to
+investigate failing tests. The planner uses `tests/seed.spec.ts` to initialize
+the app; add any required setup there before planning flows.
+
+In VS Code 1.105 or later, select the desired agent in the Chat agent picker.
+The Playwright test MCP server is configured in `.vscode/mcp.json`. To refresh
+the generated agent definitions after updating Playwright, run:
+
+```powershell
+npx.cmd playwright init-agents --loop=vscode
+```
+
 ## Run tests
 
 By default, tests open a visible Chromium window and run one at a time. Browser
@@ -37,6 +53,10 @@ The default base URL is `https://opensource-demo.orangehrmlive.com`. Override
 it with `BASE_URL` if you need to target another environment. The valid-login test uses
 the public demo credentials (`Admin` / `admin123`) by default; override them
 with `ORANGEHRM_USERNAME` and `ORANGEHRM_PASSWORD` when needed.
+The leave application test uses `CAN - Personal` and 30 October 2026 by
+default; override these with `ORANGEHRM_LEAVE_TYPE` and
+`ORANGEHRM_LEAVE_DATE` (`yyyy-dd-mm` format). Running that test submits a
+persistent leave request to the configured OrangeHRM account.
 
 For example, in PowerShell:
 
@@ -56,11 +76,20 @@ changing `tsconfig.json`.
 ```text
 pages/
   DashboardPage.ts
+  LeaveApplicationPage.ts
   LoginPage.ts
   PersonalDetailsPage.ts
 tests/
+  apply-leave.spec.ts
   login.spec.ts
   personal-details.spec.ts
+  seed.spec.ts
+specs/
+  README.md
+.github/agents/
+  playwright-test-planner.agent.md
+  playwright-test-generator.agent.md
+  playwright-test-healer.agent.md
 playwright.config.ts
 tsconfig.json
 ```
