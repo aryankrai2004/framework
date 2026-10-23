@@ -21,7 +21,7 @@ The workspace includes Playwright's planner, generator, and healer agents under
 `.github/agents/`. Use the planner to explore the app and write a test plan in
 `specs/`, the generator to create tests from that plan, and the healer to
 investigate failing tests. The planner uses `tests/seed.spec.ts` to initialize
-the app; add any required setup there before planning flows.
+the app; it uses the shared workflow to sign in and open My Info.
 
 In VS Code 1.105 or later, select the desired agent in the Chat agent picker.
 The Playwright test MCP server is configured in `.vscode/mcp.json`. To refresh
@@ -79,6 +79,8 @@ pages/
   LeaveApplicationPage.ts
   LoginPage.ts
   PersonalDetailsPage.ts
+workflows/
+  OrangeHrmWorkflow.ts
 tests/
   apply-leave.spec.ts
   login.spec.ts
@@ -94,15 +96,27 @@ playwright.config.ts
 tsconfig.json
 ```
 
-Page objects keep UI locators and interactions separate from test scenarios.
+## Framework structure
+
+Tests are written as readable scenarios. They provide test data and call a
+business workflow; they should not contain selectors, direct browser actions,
+or page-specific assertions.
+
+- `tests/` describes what a user or employee is trying to do.
+- `workflows/OrangeHrmWorkflow.ts` coordinates end-to-end business activities
+  across pages and adds named steps to the Playwright report.
+- `pages/` contains page objects. Each page object owns its locators, UI
+  actions, and checks for that page.
+
+For example, a test calls `orangeHrm.updatePersonalDetails(employeeDetails)`.
+The workflow handles signing in, navigating to My Info, saving the details,
+and verifying the outcome; the page objects handle the OrangeHRM controls.
+When adding a new scenario, add or reuse page actions first, coordinate them
+in the workflow, then keep the spec focused on the scenario and its data.
+
 The Playwright configuration enables failure screenshots, video, and traces;
-the HTML report is written to `playwright-report/`. Test actions use named
-Playwright steps and print started/completed messages, so the workflow is easy
-to follow in the terminal and report. The valid-login test also opens
-**My Info** and asserts that the authenticated **Personal Details** page is
-visible. The Personal Details test updates the employee name, employee ID,
-nationality, marital status, and gender, asserts the **Successfully Updated**
-confirmation, and verifies the values remain saved after a page reload.
+the HTML report is written to `playwright-report/`. Open it with
+`npm.cmd run report`.
 
 ## GitHub Actions CI
 

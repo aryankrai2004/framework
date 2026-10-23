@@ -13,10 +13,10 @@ export class LeaveApplicationPage {
   readonly overlappingRequestsHeading: Locator;
 
   constructor(private readonly page: Page) {
-    this.leaveForm = page
-      .locator('.orangehrm-card-container')
-      .filter({ has: page.locator('.oxd-select-text') });
-    this.pageTitle = this.leaveForm.getByRole('heading');
+    this.pageTitle = page
+      .getByRole('heading')
+      .filter({ hasText: /apply leave|solicitar licencia/i });
+    this.leaveForm = page.locator('.oxd-form');
     this.noLeaveTypesMessage = page.getByText(
       /no leave types with leave balance|no hay tipos de.*saldo/i,
     );
@@ -41,16 +41,12 @@ export class LeaveApplicationPage {
   async open(): Promise<boolean> {
     await this.page.goto('/web/index.php/leave/applyLeave');
     await expect(this.page).toHaveURL(/\/leave\/applyLeave/);
-    await expect(
-      this.page.getByRole('heading', { name: 'Apply Leave' }),
-    ).toBeVisible();
+    await expect(this.pageTitle).toBeVisible();
 
     if (await this.noLeaveTypesMessage.isVisible()) {
       return false;
     }
 
-    await expect(this.leaveForm).toBeVisible();
-    await expect(this.pageTitle).toBeVisible();
     await expect(this.leaveTypeDropdown).toBeVisible();
     await expect(this.dateInputs).toHaveCount(2);
     await expect(this.commentsInput).toBeVisible();

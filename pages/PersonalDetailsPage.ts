@@ -1,5 +1,15 @@
 import { expect, Locator, Page } from '@playwright/test';
 
+export interface PersonalDetails {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  employeeId: string;
+  nationality: string;
+  maritalStatus: string;
+  gender: 'Male' | 'Female';
+}
+
 export class PersonalDetailsPage {
   readonly pageTitle: Locator;
   readonly firstNameInput: Locator;
@@ -42,18 +52,11 @@ export class PersonalDetailsPage {
 
   async expectLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/\/pim\/viewPersonalDetails/);
-    await expect(this.pageTitle).toBeVisible();
+    await expect(this.page.locator('form').filter({ has: this.firstNameInput }))
+      .toBeVisible();
   }
 
-  async updatePersonalDetails(details: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    employeeId: string;
-    nationality: string;
-    maritalStatus: string;
-    gender: 'Male' | 'Female';
-  }): Promise<void> {
+  async updatePersonalDetails(details: PersonalDetails): Promise<void> {
     await this.firstNameInput.fill(details.firstName);
     await this.middleNameInput.fill(details.middleName);
     await this.lastNameInput.fill(details.lastName);
@@ -75,6 +78,8 @@ export class PersonalDetailsPage {
 
   async expectUpdateSuccess(): Promise<void> {
     await expect(this.successToast).toBeVisible();
-    await expect(this.successToast).toContainText('Successfully Updated');
+    await expect(this.successToast).toContainText(
+      /successfully updated|actualizado correctamente/i,
+    );
   }
 }

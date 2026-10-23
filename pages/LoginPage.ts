@@ -13,14 +13,23 @@ export class LoginPage {
     this.errorMessage = page.locator('.oxd-alert-content-text');
   }
 
-  async goto(): Promise<void> {
+  async open(): Promise<void> {
     await this.page.goto('/web/index.php/auth/login');
     await expect(this.submitButton).toBeVisible();
+    await expect(this.usernameInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
   }
 
   async login(username: string, password: string): Promise<void> {
     await this.usernameInput.fill(username);
     await this.passwordInput.fill(password);
     await this.submitButton.click();
+  }
+
+  async expectInvalidCredentials(): Promise<void> {
+    await expect(this.errorMessage).toContainText(
+      /invalid credentials|credenciales inválidas/i,
+    );
+    await expect(this.page).toHaveURL(/\/auth\/login/);
   }
 }

@@ -19,5 +19,6 @@ export class DashboardPage {
 
   async openPersonalDetails(): Promise<void> {
     await this.myInfoLink.click();
+    await expect(this.page).toHaveURL(/\/pim\/viewPersonalDetails/);
   }
 }
