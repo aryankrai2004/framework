@@ -41,7 +41,7 @@ jobs:
       - name: Type-check
         run: npx tsc --noEmit
 
-      - name: Run Playwright login and Personal Details tests
+      - name: Run full Playwright suite
         run: npm test -- --project=chromium
 
       - name: Upload Playwright results
