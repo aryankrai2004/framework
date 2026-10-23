@@ -121,10 +121,12 @@ the HTML report is written to `playwright-report/`. Open it with
 ## GitHub Actions CI
 
 The workflow at `.github/workflows/ci.yml` runs on pull requests targeting
-`master` and pushes to `master`. It installs dependencies and Chromium,
-type-checks the project, runs the Chromium Playwright login and Personal
-Details tests in headless mode, and uploads test artifacts.
+`demo_test` and pushes to `demo_test`. It installs dependencies and Chromium,
+type-checks the project (including pages, workflows, and tests), runs the full
+Chromium Playwright suite in headless mode, and uploads the HTML report and
+test artifacts. The leave test is reported as skipped when the demo account has
+no leave entitlement; all other test failures fail the workflow.
 
 To require successful CI before merging, enable branch protection or a
-repository ruleset for `master` in GitHub and require the
+repository ruleset for `demo_test` in GitHub and require the
 `Type-check and Playwright tests` status check.
