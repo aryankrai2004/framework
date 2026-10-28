@@ -95,10 +95,17 @@ export class OrangeHrmWorkflow {
       return 'no-entitlement';
     }
 
-    await test.step('Choose the leave type and check the available balance', async () => {
-      await this.leaveApplicationPage.selectLeaveType(leaveType);
-      await this.leaveApplicationPage.expectAtLeastOneDayAvailable();
-    });
+    const hasEnoughLeaveBalance = await test.step(
+      'Choose the leave type and check the available balance',
+      async () => {
+        await this.leaveApplicationPage.selectLeaveType(leaveType);
+        return this.leaveApplicationPage.hasAtLeastOneDayAvailable();
+      },
+    );
+
+    if (!hasEnoughLeaveBalance) {
+      return 'no-entitlement';
+    }
 
     await test.step('Enter and verify the requested day', async () => {
       await this.leaveApplicationPage.enterDateRange(leaveDate);

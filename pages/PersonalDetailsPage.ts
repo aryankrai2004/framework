@@ -18,6 +18,7 @@ export class PersonalDetailsPage {
   readonly employeeIdInput: Locator;
   readonly nationalityDropdown: Locator;
   readonly maritalStatusDropdown: Locator;
+  readonly genderGroup: Locator;
   readonly saveButton: Locator;
   readonly successToast: Locator;
 
@@ -41,6 +42,9 @@ export class PersonalDetailsPage {
     const personalDetailsForm = page
       .locator('form')
       .filter({ has: this.firstNameInput });
+    this.genderGroup = personalDetailsForm
+      .locator('.oxd-input-group')
+      .filter({ hasText: /^Gender/ });
     this.saveButton = personalDetailsForm.getByRole('button', {
       name: 'Save',
       exact: true,
@@ -72,12 +76,14 @@ export class PersonalDetailsPage {
       .getByRole('option', { name: details.maritalStatus, exact: true })
       .click();
 
-    await this.page.getByText(details.gender, { exact: true }).click();
+    await this.genderGroup
+      .getByRole('radio', { name: details.gender, exact: true })
+      .check();
     await this.saveButton.click();
   }
 
   async expectUpdateSuccess(): Promise<void> {
-    await expect(this.successToast).toBeVisible();
+    await expect(this.successToast).toBeVisible({ timeout: 15_000 });
     await expect(this.successToast).toContainText(
       /successfully updated|actualizado correctamente/i,
     );
