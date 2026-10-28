@@ -32,7 +32,7 @@ export class LeaveApplicationPage {
       .last()
       .getByRole('textbox');
     this.applyButton = this.leaveForm.getByRole('button').last();
-    this.successToast = page.locator('.oxd-toast');
+    this.successToast = page.locator('.oxd-toast--success');
     this.overlappingRequestsHeading = page
       .getByRole('heading')
       .filter({
