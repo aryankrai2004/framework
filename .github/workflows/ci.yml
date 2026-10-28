@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
     branches:
-      - master
+      - demo_test
   push:
     branches:
-      - master
+      - demo_test
 
 permissions:
   contents: read
