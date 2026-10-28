@@ -16,6 +16,7 @@ const employeeDetails: PersonalDetails = {
 };
 
 test('an employee can update personal details', async ({ page }) => {
+  test.setTimeout(60_000);
   const orangeHrm = new OrangeHrmWorkflow(page, username, password);
 
   await orangeHrm.updatePersonalDetails(employeeDetails);

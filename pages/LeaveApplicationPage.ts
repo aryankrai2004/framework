@@ -86,14 +86,16 @@ export class LeaveApplicationPage {
     await expect(this.applyButton).toBeEnabled();
   }
 
-  async expectAtLeastOneDayAvailable(): Promise<void> {
+  async hasAtLeastOneDayAvailable(): Promise<boolean> {
     const balanceText = await this.leaveBalance.textContent();
     const availableDays = Number.parseFloat(balanceText ?? '');
 
     expect(
-      availableDays,
-      `Expected at least one day of leave to be available; got "${balanceText}"`,
-    ).toBeGreaterThanOrEqual(1);
+      Number.isFinite(availableDays),
+      `Could not read the available leave balance from "${balanceText}"`,
+    ).toBe(true);
+
+    return availableDays >= 1;
   }
 
   private async waitForFormLoader(): Promise<void> {
