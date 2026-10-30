@@ -8,6 +8,7 @@ export class LeaveApplicationPage {
   readonly leaveTypeDropdown: Locator;
   readonly leaveBalance: Locator;
   readonly dateInputs: Locator;
+  readonly durationInput: Locator;
   readonly commentsInput: Locator;
   readonly applyButton: Locator;
   readonly successToast: Locator;
@@ -27,6 +28,10 @@ export class LeaveApplicationPage {
     this.dateInputs = this.leaveForm.getByRole('textbox', {
       name: 'yyyy-dd-mm',
     });
+    this.durationInput = this.leaveForm
+      .locator('.oxd-input-group')
+      .filter({ hasText: /^Duration/ })
+      .locator('input');
     this.commentsInput = this.leaveForm
       .locator('.oxd-input-group')
       .last()
@@ -83,6 +88,7 @@ export class LeaveApplicationPage {
     for (const input of await this.dateInputs.all()) {
       await expect(input).toHaveValue(date);
     }
+    await expect(this.durationInput).toHaveValue(/^1(?:\.0+)? Day\(s\)$/);
     await expect(this.applyButton).toBeEnabled();
   }
 
